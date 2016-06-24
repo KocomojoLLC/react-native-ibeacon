@@ -170,16 +170,16 @@ RCT_EXPORT_METHOD(shouldDropEmptyRanges:(BOOL)drop)
     switch (authorizationStatus) {
         case kCLAuthorizationStatusAuthorizedAlways:
             return @"authorizedAlways";
-
+            
         case kCLAuthorizationStatusAuthorizedWhenInUse:
             return @"authorizedWhenInUse";
-
+            
         case kCLAuthorizationStatusDenied:
             return @"denied";
-
+            
         case kCLAuthorizationStatusNotDetermined:
             return @"notDetermined";
-
+            
         case kCLAuthorizationStatusRestricted:
             return @"restricted";
     }
@@ -192,7 +192,7 @@ RCT_EXPORT_METHOD(shouldDropEmptyRanges:(BOOL)drop)
 }
 
 - (void)locationManager:(CLLocationManager *)manager rangingBeaconsDidFailForRegion:(CLBeaconRegion *)region withError:(NSError *)error
-{    
+{
     NSLog(@"Failed ranging region: %@", error);
 }
 
@@ -236,23 +236,32 @@ RCT_EXPORT_METHOD(shouldDropEmptyRanges:(BOOL)drop)
 }
 
 -(void)locationManager:(CLLocationManager *)manager
-        didEnterRegion:(CLBeaconRegion *)region {
-    NSDictionary *event = @{
-                            @"region": region.identifier,
-                            @"uuid": [region.proximityUUID UUIDString],
-                            };
+        didEnterRegion:(CLRegion *)region {
     
-    [self.bridge.eventDispatcher sendDeviceEventWithName:@"regionDidEnter" body:event];
+    if([region isKindOfClass:[CLBeaconRegion class]]) {
+        CLBeaconRegion *beaconRegion = (CLBeaconRegion *)region;
+        NSDictionary *event = @{
+                                @"region": beaconRegion.identifier,
+                                @"uuid": [beaconRegion.proximityUUID UUIDString],
+                                };
+        
+        [self.bridge.eventDispatcher sendDeviceEventWithName:@"beaconRegionDidEnter" body:event];
+    }
 }
 
 -(void)locationManager:(CLLocationManager *)manager
-         didExitRegion:(CLBeaconRegion *)region {
-    NSDictionary *event = @{
-                            @"region": region.identifier,
-                            @"uuid": [region.proximityUUID UUIDString],
-                            };
+         didExitRegion:(CLRegion *)region {
     
-    [self.bridge.eventDispatcher sendDeviceEventWithName:@"regionDidExit" body:event];
+    if([region isKindOfClass:[CLBeaconRegion class]]) {
+        CLBeaconRegion *beaconRegion = (CLBeaconRegion *)region;
+        
+        NSDictionary *event = @{
+                                @"region": beaconRegion.identifier,
+                                @"uuid": [beaconRegion.proximityUUID UUIDString],
+                                };
+        
+        [self.bridge.eventDispatcher sendDeviceEventWithName:@"beaconRegionDidExit" body:event];
+    }
 }
 
 @end
