@@ -238,7 +238,7 @@ RCT_EXPORT_METHOD(shouldDropEmptyRanges:(BOOL)drop)
 -(void)locationManager:(CLLocationManager *)manager
         didEnterRegion:(CLRegion *)region {
     
-    if([region isKindOfClass:[CLBeaconRegion class]]) {
+    if([region isMemberOfClass:[CLBeaconRegion class]]) {
         CLBeaconRegion *beaconRegion = (CLBeaconRegion *)region;
         NSDictionary *event = @{
                                 @"region": beaconRegion.identifier,
@@ -252,7 +252,7 @@ RCT_EXPORT_METHOD(shouldDropEmptyRanges:(BOOL)drop)
 -(void)locationManager:(CLLocationManager *)manager
          didExitRegion:(CLRegion *)region {
     
-    if([region isKindOfClass:[CLBeaconRegion class]]) {
+    if([region isMemberOfClass:[CLBeaconRegion class]]) {
         CLBeaconRegion *beaconRegion = (CLBeaconRegion *)region;
         
         NSDictionary *event = @{
