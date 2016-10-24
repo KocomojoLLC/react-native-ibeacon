@@ -95,6 +95,15 @@ RCT_EXPORT_MODULE()
     }
 }
 
+- (NSDictionary *) convertBeaconRegionToDict: (CLBeaconRegion *)region {
+    return @{
+             @"identifier": region.identifier,
+             @"uuid": [region.proximityUUID UUIDString],
+             @"major": region.major ? region.major : [NSNull null],
+             @"minor": region.minor ? region.minor : [NSNull null]
+             };
+}
+
 - (NSString *)stringForProximity:(CLProximity)proximity {
     switch (proximity) {
         case CLProximityUnknown:    return @"unknown";
@@ -134,6 +143,37 @@ RCT_EXPORT_METHOD(startMonitoringForRegion:(NSDictionary *) dict)
 {
     [self.locationManager startMonitoringForRegion:[self convertDictToBeaconRegion:dict]];
 }
+
+RCT_EXPORT_METHOD(stopMonitoringAllBeaconRegions) {
+    NSSet *monitoredRegions = [self.locationManager monitoredRegions];
+    
+    NSArray *monitoredRegionsArray = [monitoredRegions allObjects];
+    for(NSInteger i = 0; i < [monitoredRegionsArray count]; i++) {
+        CLRegion *curRegion = [monitoredRegionsArray objectAtIndex:i];
+        
+        if([curRegion isMemberOfClass:[CLBeaconRegion class]]) {
+            [self.locationManager stopMonitoringForRegion:curRegion];
+        }
+    }
+}
+
+RCT_EXPORT_METHOD(getBeaconRegionsMonitored:(RCTResponseSenderBlock)callback) {
+    NSSet *monitoredRegions = [self.locationManager monitoredRegions];
+    
+    NSArray *monitoredRegionsArray = [monitoredRegions allObjects];
+    NSMutableArray *beaconRegionsArray = [[NSMutableArray alloc]init];
+    
+    for(NSInteger i = 0; i < [monitoredRegionsArray count]; i++) {
+        CLRegion *curRegion = [monitoredRegionsArray objectAtIndex:i];
+        
+        if([curRegion isMemberOfClass:[CLBeaconRegion class]]) {
+            [beaconRegionsArray addObject:[self convertBeaconRegionToDict:curRegion]];
+        }
+    }
+    
+    callback(@[beaconRegionsArray]);
+}
+
 
 RCT_EXPORT_METHOD(startRangingBeaconsInRegion:(NSDictionary *) dict)
 {
