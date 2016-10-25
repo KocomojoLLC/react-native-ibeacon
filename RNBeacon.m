@@ -118,12 +118,12 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(requestAlwaysAuthorization)
 {
     if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8) {
-            [self.locationManager requestAlwaysAuthorization];
-        }
-        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9) {
-            self.locationManager.allowsBackgroundLocationUpdates = YES;
-        }
+        //        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8) {
+        [self.locationManager requestAlwaysAuthorization];
+        //        }
+        //        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9) {
+        //            self.locationManager.allowsBackgroundLocationUpdates = YES;
+        //        }
     }
 }
 
